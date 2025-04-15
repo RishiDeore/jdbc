@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LIBRARY CRUD</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      input,
+      button {
+        margin: 5px;
+        padding: 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>LIBRARY CRUD OPERATIONS</h1>
+    <input
+      type="text"
+      id="search"
+      placeholder="Search by name..."
+      oninput="searchBook()"
+    />
+    <h3>Library Form</h3>
+    <input type="text" id="title" placeholder="Title" required />
+    <input type="text" id="author" placeholder="Author" required />
+    <input type="text" id="genre" placeholder="Genre" required />
+    <input type="number" id="price" placeholder="Price" required />
+    <button onclick="addBook()">ADD BOOK</button>
+
+    <h3>Book List</h3>
+    <table id="bookTable">
+      <thead>
+        <tr>
+          <th onclick="sortTabel('bookId')">Book ID</th>
+          <th onclick="sortTabel('title')">Title</th>
+          <th onclick="sortTabel('author')">Author</th>
+          <th onclick="sortTabel('genre')">Genre</th>
+          <th onclick="sortTabel('price')">Price</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody></tbody>
+    </table>
+    <script>
+      const book = [
+        {
+          bookId: 1,
+          title: "The Great Gatsby",
+          author: "F. Scott Fitzgerald",
+          genre: "Classic",
+          price: 11,
+        },
+        {
+          bookId: 2,
+          title: "To Kill a Mockingbird",
+          author: "Harper Lee",
+          genre: "Fiction",
+          price: 8,
+        },
+        {
+          bookId: 3,
+          title: "1984",
+          author: "George Orwell",
+          genre: "Dystopian",
+          price: 9,
+        },
+        {
+          bookId: 4,
+          title: "Pride and Prejudice",
+          author: "Jane Austen",
+          genre: "Romance",
+          price: 6,
+        },
+        {
+          bookId: 5,
+          title: "The Catcher in the Rye",
+          author: "J.D. Salinger",
+          genre: "Fiction",
+          price: 10,
+        },
+        {
+          bookId: 6,
+          title: "The Hobbit",
+          author: "J.R.R. Tolkien",
+          genre: "Fantasy",
+          price: 12,
+        },
+        {
+          bookId: 7,
+          title: "Moby Dick",
+          author: "Herman Melville",
+          genre: "Adventure",
+          price: 13,
+        },
+        {
+          bookId: 8,
+          title: "War and Peace",
+          author: "Leo Tolstoy",
+          genre: "Historical Fiction",
+          price: 16,
+        },
+        {
+          bookId: 9,
+          title: "The Alchemist",
+          author: "Paulo Coelho",
+          genre: "Adventure",
+          price: 7,
+        },
+        {
+          bookId: 10,
+          title: "Brave New World",
+          author: "Aldous Huxley",
+          genre: "Science Fiction",
+          price: 8,
+        },
+      ];
+
+      let editmode = false;
+      let editid = null;
+
+      function displayBook(book) {
+        let tableBody = document.querySelector("#bookTable tbody");
+        tableBody.innerHTML = "";
+        book.forEach((element) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `<td>${element.bookId}</td>
+          <td>${element.title}</td>
+          <td>${element.author}</td>
+          <td>${element.genre}</td>
+          <td>${element.price}</td>
+          <td>
+            <button onclick="editBook(${element.bookId})">Edit</button>
+            <button onclick="deleteBook(${element.bookId})">Delete</button>
+          </td>`;
+          tableBody.appendChild(row);
+        });
+      }
+
+      function addBook() {
+        const title = document.getElementById("title").value;
+        const author = document.getElementById("author").value;
+        const genre = document.getElementById("genre").value;
+        const price = document.getElementById("price").value;
+        if (title && author && genre && price) {
+          if (editmode) {
+            const pro = book.find((e) => e.bookId == editid);
+            pro.title = title;
+            pro.author = author;
+            pro.genre = genre;
+            pro.price = Number(price);
+            editmode = false;
+          } else {
+            const newBook = {
+              bookId: book.length + 1,
+              title,
+              author,
+              genre,
+              price: Number(price),
+            };
+            book.push(newBook);
+          }
+          clearForm();
+          displayBook(book);
+        } else {
+          alert("Please Enter all the fields.");
+        }
+      }
+
+      function editBook(id) {
+        const m = book.find((e) => e.bookId == id);
+
+        if (m) {
+          document.getElementById("title").value = m.title;
+          document.getElementById("author").value = m.author;
+          document.getElementById("genre").value = m.genre;
+          document.getElementById("price").value = m.price;
+          editmode = true;
+          editid = id;
+          document.querySelector("button").innerText = "UPDATE BOOK";
+        }
+      }
+
+      function deleteBook(id) {
+        const index = book.findIndex((e) => e.bookId === id);
+        if (index !== 1) {
+          book.splice(index, 1);
+          displayBook(book);
+        }
+      }
+
+      function clearForm() {
+        document.getElementById("title").value = "";
+        document.getElementById("author").value = "";
+        document.getElementById("genre").value = "";
+        document.getElementById("price").value = "";
+        document.querySelector("button").innerText = "ADD BOOK";
+      }
+
+      function sortTabel(col) {
+        const sortedBook = [...book];
+        if (col === "bookId") {
+          sortedBook.sort((a, b) => a.bookId - b.bookId);
+        } else if (col === "title") {
+          sortedBook.sort((a, b) => a.title.localeCompare(b.title));
+        } else if (col === "author") {
+          sortedBook.sort((a, b) => a.author.localeCompare(b.author));
+        } else if (col === "genre") {
+          sortedBook.sort((a, b) => a.genre.localeCompare(b.genre));
+        } else if (col === "price") {
+          sortedBook.sort((a, b) => a.price - b.price);
+        }
+        displayBook(sortedBook);
+      }
+
+      function searchBook() {
+        const searchQuery = document
+          .getElementById("search")
+          .value.toLowerCase();
+        const filteredBook = book.filter(
+          (m) =>
+            m.title.toLowerCase().includes(searchQuery) ||
+            m.author.toLowerCase().includes(searchQuery) ||
+            m.price == searchQuery ||
+            m.genre.toLowerCase().includes(searchQuery)
+        );
+        displayBook(filteredBook);
+      }
+
+      displayBook(book);
+    </script>
+  </body>
+</html>

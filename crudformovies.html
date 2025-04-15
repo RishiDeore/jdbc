@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MOVIE CRUD</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      input,
+      button {
+        margin: 5px;
+        padding: 8px;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      th,
+      td {
+        padding: 10px;
+        text-align: left;
+        border: 1px solid #ddd;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>MOVIE CRUD OPERATIONS</h1>
+    <h3>Movie Form</h3>
+    <input type="text" id="title" placeholder="Title" required />
+    <input type="text" id="genre" placeholder="Genre" required />
+    <input type="text" id="language" placeholder="Language" required />
+    <input type="number" id="budget" placeholder="Budget" required />
+    <button onclick="addMovie()">ADD MOVIE</button>
+
+    <h3>Movie List</h3>
+    <table id="movieTable">
+      <thead>
+        <tr>
+          <th>MovieID</th>
+          <th>Title</th>
+          <th>Genre</th>
+          <th>Language</th>
+          <th>Budget</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody></tbody>
+    </table>
+    <script>
+      let movies = [
+        {
+          movieId: "1",
+          title: "The Time Voyager",
+          genre: "Sci-Fi",
+          language: "English",
+          budget: 120000000,
+        },
+        {
+          movieId: "2",
+          title: "Raj Mahal",
+          genre: "Historical Drama",
+          language: "Hindi",
+          budget: 75000000,
+        },
+        {
+          movieId: "3",
+          title: "Echoes of Silence",
+          genre: "Thriller",
+          language: "Spanish",
+          budget: 25000000,
+        },
+        {
+          movieId: "4",
+          title: "Dino Planet",
+          genre: "Adventure",
+          language: "English",
+          budget: 95000000,
+        },
+        {
+          movieId: "5",
+          title: "Love in Tokyo",
+          genre: "Romance",
+          language: "Japanese",
+          budget: 18000000,
+        },
+        {
+          movieId: "6",
+          title: "Cyber Yoddha",
+          genre: "Action",
+          language: "Hindi",
+          budget: 40000000,
+        },
+        {
+          movieId: "7",
+          title: "Frozen Tides",
+          genre: "Fantasy",
+          language: "English",
+          budget: 130000000,
+        },
+        {
+          movieId: "8",
+          title: "La Vida Loca",
+          genre: "Comedy",
+          language: "Spanish",
+          budget: 9000000,
+        },
+        {
+          movieId: "9",
+          title: "Ananta",
+          genre: "Mythological",
+          language: "Telugu",
+          budget: 60000000,
+        },
+        {
+          movieId: "10",
+          title: "Midnight Melody",
+          genre: "Musical",
+          language: "English",
+          budget: 15000000,
+        },
+      ];
+
+      let editmode = false;
+      let editid = null;
+
+      function displayMovies(movies) {
+        let tableBody = document.querySelector("#movieTable tbody");
+        tableBody.innerHTML = "";
+        movies.forEach((element) => {
+          const row = document.createElement("tr");
+          row.innerHTML = `<td>${element.movieId}</td>
+          <td>${element.title}</td>
+          <td>${element.genre}</td>
+          <td>${element.language}</td>
+          <td>${element.budget}</td>
+          <td>
+            <button onclick="editMovie(${element.movieId})">Edit</button>
+            <button onclick="deleteMovie(${element.movieId})">Delete</button>
+          </td>`;
+          tableBody.appendChild(row);
+        });
+      }
+
+      function addMovie() {
+        const title = document.getElementById("title").value;
+        const genre = document.getElementById("genre").value;
+        const language = document.getElementById("language").value;
+        const budget = document.getElementById("budget").value;
+        if (title && genre && language && budget) {
+          if (editmode) {
+            const movie = movies.find((e) => e.movieId == editid);
+            movie.title = title;
+            movie.genre = genre;
+            movie.language = language;
+            movie.budget = Number(budget);
+            editmode = false;
+          } else {
+            const newMovie = {
+              movieId: movies.length + 1,
+              title,
+              genre,
+              language,
+              budget: Number(budget)
+            };
+            movies.push(newMovie);
+          }
+        } else {
+          alert("Please Enter all the fields.");
+        }
+        clearForm();
+        displayMovies(movies);
+      }
+
+      function editMovie(id) {
+        console.log("EDIT")
+        console.log(id)
+        const m = movies.find((e)=>e.movieId == id);
+        
+        if(m){
+        document.getElementById("title").value = m.title;
+        document.getElementById("genre").value = m.genre;
+        document.getElementById("language").value = m.language;
+        document.getElementById("budget").value = m.budget;
+        editmode = true;
+        editid = id;
+        document.querySelector("button").innerText = "UPDATE MOVIE";
+        }
+      }
+
+      function deleteMovie(id) {
+        const index = movies.findIndex((e)=>e.movieId===id);
+        if(index !== 1){
+            movies.splice(index,1);
+            displayMovies(movies);
+        }
+      }
+
+      function clearForm() {
+        document.getElementById("title").value = "";
+        document.getElementById("genre").value = "";
+        document.getElementById("language").value = "";
+        document.getElementById("budget").value = "";
+        document.querySelector("button").innerText = "ADD MOVIE";
+      }
+
+      displayMovies(movies);
+    </script>
+  </body>
+</html>
